@@ -1,0 +1,25 @@
+/* Basic styling */
+body {
+	font-family: sans-serif;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+}
+
+li {
+	padding: 10px;
+	border-bottom: 1px solid #ccc;
+}
+
+.completed {
+	text-decoration: line-through;
+	color: gray;
+}
+
+/* Buttons */
+.edit-button,
+.delete-button {
+	margin-left: 10px;
+}
