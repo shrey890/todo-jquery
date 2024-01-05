@@ -1,25 +1,104 @@
-/* Basic styling */
+@import url("https://fonts.googleapis.com/css2?family=Short+Stack&display=swap");
 body {
-	font-family: sans-serif;
+	font-family: "Arial", sans-serif;
+	background-color: #f4f4f4;
+
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* height: 100vh; */
 }
 
-ul {
-	list-style: none;
-	padding: 0;
+#container {
+	text-align: center;
+	background-color: #fff;
+	padding: 20px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	border-bottom-right-radius: 10px;
+	border-bottom-left-radius: 10px;
+	box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+	animation: neon-light 3.5s infinite alternate;
+}
+#controls {
+	margin-bottom: 20px;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+h1 {
+	color: #333;
+	margin-top: 10px;
+	font-family: Rubik Doodle Shadow;
+}
+
+#new-task {
+	padding: 8px;
+	margin: 10px 0;
+	width: 80%;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+}
+#clear-button {
+	padding: 8px;
+	border-radius: 4px;
+	border: none;
+	background: #000;
+	color: white;
+}
+#todo-list {
+	list-style-type: none;
+	padding: 10px;
+	/* overflow-y: scroll; */
+	/* height: 200px; */
 }
 
 li {
+	background-color: #f9f9f9;
 	padding: 10px;
-	border-bottom: 1px solid #ccc;
+	margin: 5px 0;
+	border-radius: 4px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-family: Short Stack;
+}
+li:hover {
+	background-color: #e0e0e0;
 }
 
-.completed {
-	text-decoration: line-through;
-	color: gray;
-}
-
-/* Buttons */
-.edit-button,
-.delete-button {
+li span {
+	cursor: pointer;
+	font-size: 20px;
+	color: #cc0000;
 	margin-left: 10px;
+}
+
+li.completed {
+	background-color: #acd1ac;
+	text-decoration: line-through;
+	filter: opacity(0.3);
+}
+/* !animation */
+@keyframes neon-light {
+	to {
+		box-shadow: 0 0 30px #d9ff00, 0 0 30px #0011ff, 0 0 30px #00ff00; /* Neon light effect */
+	}
 }
