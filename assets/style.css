@@ -22,7 +22,6 @@ body {
 	border-bottom-right-radius: 10px;
 	border-bottom-left-radius: 10px;
 	box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
-	animation: neon-light 3.5s infinite alternate;
 }
 #controls {
 	margin-bottom: 20px;
@@ -96,9 +95,7 @@ li.completed {
 	text-decoration: line-through;
 	filter: opacity(0.3);
 }
-/* !animation */
-@keyframes neon-light {
-	to {
-		box-shadow: 0 0 30px #d9ff00, 0 0 30px #0011ff, 0 0 30px #00ff00; /* Neon light effect */
-	}
+
+.date-time {
+	color: #000000;
 }
