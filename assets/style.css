@@ -97,5 +97,10 @@ li.completed {
 }
 
 .date-time {
-	color: #000000;
+	display: none;
+}
+
+li:hover .date-time {
+	display: inline;
+	color: gray;
 }

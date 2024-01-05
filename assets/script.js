@@ -16,7 +16,7 @@ $("input[type='text']").keypress(function (e) {
         let todo = $(this).val().trim();
         if (todo !== '') {
             let dateIST = getISTDate()
-            $('ul').append("<li><span class='delete'>❌</span><span class='task-text'>" + todo + "</span><span class='edit'>✏️</span> <span class='date-time'>" + dateIST + " </span> </li>");
+            $('ul').append("<li><span class='delete'>❌</span><span class='task-text'>" + todo + "</span> <span class='date-time'>" + dateIST + " </span> <span class='edit'>✏️</span></li>");
             saveTasks();
             $(this).val('');
         } else {
@@ -84,7 +84,7 @@ function loadTasks() {
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     tasks.forEach(function (task) {
         let completed = task.completed || false;
-        let str = "<li" + (completed ? " class='completed'" : "") + "><span class='delete'>❌</span><span class='task-text'>" + task.text + "</span><span class='edit'>✏️</span><span class='date-time'>" + task.dateTime + "</span></li>";
+        let str = "<li" + (completed ? " class='completed'" : "") + "><span class='delete'>❌</span><span class='task-text'>" + task.text + "</span><span class='date-time'>" + task.dateTime + "</span><span class='edit'>✏️</span></li>";
         $('ul').append(str);
     });
 }
@@ -103,12 +103,27 @@ function saveTasks() {
 // ! Filter Btn
 $('#show-all').click(function () {
     $('li').show();
+    if ($('li').length === 0) {
+        $('#message').text('Please add a task ')
+    } else {
+        $('#message').text('')
+    }
 })
 $('#show-completed').click(function () {
     $('li').hide()
     $('.completed').show()
+    if ($('.completed').length === 0) {
+        $('#message').text('All Task are Pending')
+    } else {
+        $('#message').text('')
+    }
 })
 $('#show-pending').click(function () {
     $('li').hide()
     $('li:not(.completed)').show()
+    if ($('li:not(.completed)').length === 0) {
+        $('#message').text('All tasks are completed.')
+    } else {
+        $('#message').text('')
+    }
 })
