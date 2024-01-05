@@ -1,12 +1,4 @@
-function getISTDate() {
-    let date = new Date()
-    let offsetIST = date.getTimezoneOffset() + 330
-    date.setMinutes(date.getMinutes() + offsetIST)
-    let day = ("0" + date.getDate()).slice(-2);
-    let month = ("0" + (date.getMonth() + 1)).slice(-2);
-    let year = date.getFullYear();
-    return day + "-" + month + "-" + year + " ";
-}
+
 $(function () {
     loadTasks();
 });
@@ -15,8 +7,7 @@ $("input[type='text']").keypress(function (e) {
     if (e.which === 13) {
         let todo = $(this).val().trim();
         if (todo !== '') {
-            let dateIST = getISTDate()
-            $('ul').append("<li><span class='delete'>❌</span><span class='task-text'>" + todo + "</span> <span class='date-time'>" + dateIST + " </span> <span class='edit'>✏️</span></li>");
+            $('ul').append("<li><span class='delete'>❌</span><span class='task-text'>" + todo + "</span><span class='edit'>✏️</span> </li>");
             saveTasks();
             $(this).val('');
         } else {
@@ -49,16 +40,12 @@ $('ul').on('click', '.edit', function (e) {
         if (e.which === 13) {
             let newText = $editInput.val();
             $taskText.text(newText);
-            let dateIST = getISTDate()
-            $(this).next('.date-time').text(dateIST)
             saveTasks();
         }
     });
     $editInput.blur(function () {
         let newText = $editInput.val();
         $taskText.text(newText);
-        let dateIST = getISTDate()
-        $(this).next('.date-time').text(dateIST);
         saveTasks();
     });
     $editInput.focus();
@@ -84,7 +71,7 @@ function loadTasks() {
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     tasks.forEach(function (task) {
         let completed = task.completed || false;
-        let str = "<li" + (completed ? " class='completed'" : "") + "><span class='delete'>❌</span><span class='task-text'>" + task.text + "</span><span class='date-time'>" + task.dateTime + "</span><span class='edit'>✏️</span></li>";
+        let str = "<li" + (completed ? " class='completed'" : "") + "><span class='delete'>❌</span><span class='task-text'>" + task.text + "</span><span class='edit'>✏️</span></li>";
         $('ul').append(str);
     });
 }
@@ -94,9 +81,8 @@ function saveTasks() {
     $('ul li').each(function () {
         let taskText = $(this).find('.task-text').text();
         let completed = $(this).hasClass('completed');
-        let dateTime = $(this).find('.date-time').text();
 
-        tasks.push({ text: taskText, completed: completed, dateTime: dateTime });
+        tasks.push({ text: taskText, completed: completed });
     });
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
