@@ -15,6 +15,12 @@ body {
 	border-radius: 5px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
 }
+footer p a {
+	text-decoration: none;
+}
+footer p a:hover {
+	text-decoration: underline;
+}
 #controls {
 	margin-bottom: 20px;
 }
@@ -97,6 +103,7 @@ li:hover .date-time {
 	border: none;
 	padding: 8px;
 	border-radius: 4px;
+	margin-top: 8px;
 }
 #show-all:focus {
 	background-color: #397ac9;
