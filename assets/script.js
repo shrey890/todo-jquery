@@ -1,12 +1,26 @@
 $(function () {
     loadTasks();
 });
-// For Adding a new Task
+//! For Adding a new Task
 $("input[type='text']").keypress(function (e) {
     if (e.which === 13) {
         let todo = $(this).val().trim();
         if (todo !== '') {
-            $('ul').append("<li><span class='delete'>❌</span><span class='task-text'>" + todo + "</span><span class='edit'>✏️</span> </li>");
+            if (todo.length > 20) {
+                alert(`only 2 characters are allowed`)
+                return
+            }
+            let status = 'pending';
+            $('ul').append(`<li data-status='${status}'>
+            <span class='delete' >❌</span>
+            <span class='task-text'>${todo}</span>
+            <span class='edit'>✏️</span> 
+            <label><input type='checkbox' name='status' value='ongoing' ${status === 'ongoing' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Ongoing</label> 
+            <label><input type='checkbox' name='status' value='pending' ${status === 'pending' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Pending</label>
+            <label><input type='checkbox' name='status' value='completed' ${status === 'completed' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Completed</label>
+        </li>`);
+            $('ul li:last-child input[type="checkbox"]').bootstrapSwitch();
+
             saveTasks();
             $(this).val('');
         } else {
@@ -14,7 +28,32 @@ $("input[type='text']").keypress(function (e) {
         }
     }
 });
-// For Delete
+// !Changing task status
+$('ul').on('switchChange.bootstrapSwitch', 'input[type="checkbox"]', function (event, state) {
+    const $task = $(this).closest('li');
+    const $completedCheckbox = $task.find('input[value="completed"]');
+    const $ongoingCheckbox = $task.find('input[value="ongoing"]');
+    const $pendingCheckbox = $task.find('input[value="pending"]');
+    const status = state ? $(this).val() : 'pending';
+    if (status === 'completed') {
+        $task.addClass('completed');
+        $task.find('.task-text').css('text-decoration', 'line-through');
+    } else {
+        $task.removeClass('completed');
+        $task.find('.task-text').css('text-decoration', 'none');
+    }
+    if (status !== 'completed') {
+        $completedCheckbox.bootstrapSwitch('state', false, true);
+    }
+    if (status !== 'ongoing') {
+        $ongoingCheckbox.bootstrapSwitch('state', false, true);
+    }
+    if (status !== 'pending') {
+        $pendingCheckbox.bootstrapSwitch('state', false, true);
+    }
+    saveTasks();
+});
+//! For Delete
 $('ul').on('click', '.delete', function (e) {
     let conf = confirm('Are you sure you want to delete this task?');
     if (conf) {
@@ -23,12 +62,12 @@ $('ul').on('click', '.delete', function (e) {
     }
     e.stopPropagation();
 });
-// For Completed
+//! For Completed
 $('ul').on('dblclick', 'li', function () {
     $(this).toggleClass('completed');
     saveTasks();
 });
-// for edit
+//! for edit
 $('ul').on('click', '.edit', function (e) {
     e.stopPropagation();
     let $taskText = $(this).prev('.task-text');
@@ -49,39 +88,53 @@ $('ul').on('click', '.edit', function (e) {
     });
     $editInput.focus();
 });
-// Clear completed button click event
+//! Clear completed button click event
 $("#clear-button").click(function () {
     showClearConfirmation();
 });
-// Function to Clear Completed tasks
+//! Function to Clear Completed tasks
 function clearCompletedTasks() {
     $('ul .completed').remove();
     saveTasks();
 }
-// Confirmation window
+//! Confirmation window
 function showClearConfirmation() {
     let confirmation = confirm("Are you sure you want to clear completed tasks?");
     if (confirmation) {
         clearCompletedTasks();
     }
 }
-// Load task
+//! Load task
 function loadTasks() {
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     tasks.forEach(function (task) {
-        let completed = task.completed || false;
-        let str = "<li" + (completed ? " class='completed'" : "") + "><span class='delete'>❌</span><span class='task-text'>" + task.text + "</span><span class='edit'>✏️</span></li>";
+        let status = task.completed ? 'completed' : (task.ongoing ? 'ongoing' : 'pending');
+        let str = `<li data-status='${status}' class='${status}'>
+        <span class='delete'>❌</span>
+        <span class='task-text'>${task.text}</span>
+        <span class='edit'>✏️</span>
+        <label><input type='checkbox' name='status' value='ongoing' ${task.ongoing ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Ongoing</label>
+        <label><input type='checkbox' name='status' value='pending' ${task.pending ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Pending</label>
+        <label><input type='checkbox' name='status' value='completed' ${task.completed ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Completed</label>
+    </li>`;
         $('ul').append(str);
+        $('ul li:last-child input[type="checkbox"]').bootstrapSwitch();
     });
 }
-// Save Task
+//! Save Task
 function saveTasks() {
     let tasks = [];
     $('ul li').each(function () {
         let taskText = $(this).find('.task-text').text();
         let completed = $(this).hasClass('completed');
-
-        tasks.push({ text: taskText, completed: completed });
+        let ongoing = $(this).find('input[value="ongoing"]').prop('checked');
+        let pending = $(this).find('input[value="pending"]').prop('checked');
+        tasks.push({
+            text: taskText,
+            completed: completed,
+            ongoing: ongoing,
+            pending: pending
+        });
     });
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
@@ -105,10 +158,40 @@ $('#show-completed').click(function () {
 })
 $('#show-pending').click(function () {
     $('li').hide()
-    $('li:not(.completed)').show()
-    if ($('li:not(.completed)').length === 0) {
+    $('li[data-status="pending"]').show()
+    if ($('li[data=status="pending"]').length === 0) {
         $('#message').text('All tasks are completed.')
     } else {
         $('#message').text('')
     }
 })
+$('#show-ongoing').click(function () {
+    $('li').hide();
+    $('li[data-status="ongoing"]').show();
+    if ($('li[data-status="ongoing"]').length === 0) {
+        $('#message').text('There are no ongoing tasks.');
+    } else {
+        $('#message').text('');
+    }
+});
+//? Clear All Tasks button click event
+// $("#clear-all-button").click(function () {
+//     $("#clear-all-confirmation").show();
+// });
+//? Function to clear all tasks
+// function clearAllTasks() {
+//     $('ul li').remove();
+//     localStorage.removeItem('tasks');
+//     $("#clear-all-confirmation").hide();
+// }
+//? Handle confirmation input
+// $("#clear-all-confirmation input").keypress(function (e) {
+//     if (e.which === 13) {
+//         let confirmationText = $(this).val().trim();
+//         if (confirmationText === "delete all") {
+//             clearAllTasks();
+//         } else {
+//             alert("Please type 'delete all' to confirm.");
+//         }
+//     }
+// });

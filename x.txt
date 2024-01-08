@@ -113,3 +113,27 @@ $('#show-pending').click(function () {
         $('#message').text('')
     }
 })
+
+//! Clear All Tasks button click event
+// $("#clear-all-button").click(function () {
+//     $("#clear-all-confirmation").show();
+// });
+
+//! Function to clear all tasks
+// function clearAllTasks() {
+//     $('ul li').remove();
+//     localStorage.removeItem('tasks');
+//     $("#clear-all-confirmation").hide();
+// }
+
+//! Handle confirmation input
+// $("#clear-all-confirmation input").keypress(function (e) {
+//     if (e.which === 13) {
+//         let confirmationText = $(this).val().trim();
+//         if (confirmationText === "delete all") {
+//             clearAllTasks();
+//         } else {
+//             alert("Please type 'delete all' to confirm.");
+//         }
+//     }
+// });
