@@ -7,7 +7,7 @@ $("input[type='text']").keypress(function (e) {
         let todo = $(this).val().trim();
         if (todo !== '') {
             if (todo.length > 20) {
-                alert(`only 2 characters are allowed`)
+                alert(`only 20 characters are allowed`)
                 return
             }
             let status = 'pending';
@@ -195,3 +195,19 @@ $('#show-ongoing').click(function () {
 //         }
 //     }
 // });
+// !Footer Time
+async function updateTime() {
+    let date = new Date();
+    let h = new Date().getHours();
+    let m = new Date().getMinutes();
+    let s = new Date().getSeconds();
+    h = h % 12
+    h = h ? h : 12
+    let ampm = h >= 12 ? 'AM' : 'PM'
+    document.getElementById("footer").innerHTML = h + ":" + m + ":" + s + " " + ampm
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    updateTime();
+}
+updateTime()
+
