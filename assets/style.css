@@ -1,19 +1,44 @@
 body {
 	font-family: Open Sans, sans-serif;
-	background-color: #f8f9fa;
+	background: radial-gradient(
+			110.35% 80.79% at 6% 103.92%,
+			rgba(37, 169, 239, 1) 0%,
+			rgba(37, 169, 239, 0) 100%
+		),
+		linear-gradient(
+			169.3deg,
+			rgba(205, 249, 232, 1) 15%,
+			rgba(205, 249, 232, 0) 46%
+		),
+		radial-gradient(
+			123% 73% at 107% 96%,
+			rgba(255, 253, 177, 1) 20%,
+			rgba(254, 228, 191, 1) 60%,
+			rgba(240, 189, 208, 1) 75%,
+			rgba(255, 129, 38, 0) 100%
+		),
+		linear-gradient(0deg, rgba(0, 204, 131, 1) 0%, rgba(0, 204, 131, 1) 100%);
 	margin: 0;
 	padding: 0;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background-repeat: no-repeat;
 }
 #container {
 	text-align: center;
 	background-color: #ede7f6;
-	/* padding: 30px; */
 	border-radius: 5px;
 	width: 100%;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
+	animation: fadeIn 1.9s linear;
+	background: linear-gradient(
+		50deg,
+		rgba(255, 255, 255, 0.4) 12%,
+		rgba(255, 255, 255, 0.1) 77%
+	);
+	box-shadow: 0px 4px 24px 1px rgba(0, 0, 0, 0.28);
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
 }
 footer p a {
 	text-decoration: none;
@@ -21,9 +46,7 @@ footer p a {
 footer p a:hover {
 	text-decoration: underline;
 }
-#controls {
-	margin-bottom: 20px;
-}
+
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -61,6 +84,16 @@ h1 {
 	transition: background-color 0.2s ease-in-out;
 }
 #clear-button:hover {
+	padding: 8px;
+	border-radius: 4px;
+	border: none;
+	background-color: #4285f4;
+	color: #fff;
+	transition: background-color 0.2s ease-in-out;
+	transform: translate(4px, 3px) scale(1.1, 1) skew(-3deg, 9deg);
+	box-shadow: 7px 1px 0px 0px rgb(17, 148, 255);
+}
+#clear-button:hover {
 	background-color: #397ac9;
 	cursor: pointer;
 }
@@ -70,7 +103,7 @@ h1 {
 	border-radius: 5px;
 }
 li {
-	background-color: #9bf8ff;
+	/* background-color: #9bf8ff; */
 	padding: 10px;
 	border-radius: 5px;
 	display: flex;
@@ -79,10 +112,7 @@ li {
 	font-family: Open Sans, sans-serif;
 	font-size: 16px;
 }
-li:hover {
-	background-color: #80cbc4;
-	color: #ffffff;
-}
+
 li span {
 	cursor: pointer;
 }
@@ -90,6 +120,11 @@ li span {
 	text-decoration: line-through;
 	filter: opacity(0.5);
 }
+.task-text:hover {
+	font-size: xx-large;
+	transition: transform 0.2s;
+}
+
 /* ! Filter Btn */
 #show-all {
 	background-color: gray;
@@ -98,6 +133,16 @@ li span {
 	padding: 8px;
 	border-radius: 4px;
 	margin-top: 8px;
+}
+#show-all:hover {
+	background-color: gray;
+	color: white;
+	border: none;
+	padding: 8px;
+	border-radius: 4px;
+	margin-top: 8px;
+	transform: translate(4px, 3px) scale(1.1, 1) skew(-3deg, 9deg);
+	box-shadow: 7px 1px 0px 0px lightgray;
 }
 #show-all:focus {
 	background-color: #397ac9;
@@ -110,6 +155,15 @@ li span {
 	border: none;
 	padding: 8px;
 	border-radius: 4px;
+}
+#show-completed:hover {
+	background-color: rgb(0, 0, 0);
+	color: rgb(94, 255, 0);
+	border: none;
+	padding: 8px;
+	border-radius: 4px;
+	transform: translate(4px, 3px) scale(1.1, 1) skew(-3deg, 9deg);
+	box-shadow: 7px 1px 0px 0px rgb(123, 255, 0);
 }
 #show-completed:focus {
 	background-color: #397ac9;
@@ -124,6 +178,16 @@ li span {
 	padding: 8px;
 	border-radius: 4px;
 }
+#show-pending:hover {
+	background-color: rgb(0, 0, 0);
+	color: rgb(255, 0, 0);
+	border: none;
+	font-weight: 500;
+	padding: 8px;
+	border-radius: 4px;
+	transform: translate(4px, 3px) scale(1.1, 1) skew(-3deg, 9deg);
+	box-shadow: 7px 1px 0px 0px rgb(255, 0, 0);
+}
 #show-pending:focus {
 	background-color: #397ac9;
 	color: white;
@@ -135,6 +199,15 @@ li span {
 	border: none;
 	padding: 8px;
 	border-radius: 4px;
+}
+#show-ongoing:hover {
+	background-color: rgb(0, 0, 0);
+	color: rgb(238, 255, 0);
+	border: none;
+	padding: 8px;
+	border-radius: 4px;
+	transform: translate(4px, 3px) scale(1.1, 1) skew(-3deg, 9deg);
+	box-shadow: 7px 1px 0px 0px rgb(251, 255, 0);
 }
 #show-ongoing:focus {
 	background-color: #397ac9;
@@ -160,7 +233,48 @@ li span {
 	background: lightcyan;
 	border-radius: 30%;
 }
+.delete:hover {
+	border-radius: 30%;
+	transition: width 1s, height 0.5s, transform 0.5s;
+
+	transform: rotate(1000deg);
+}
 .edit {
 	background: lightcyan;
 	border-radius: 30%;
+}
+.edit:hover {
+	background: lightcyan;
+	border-radius: 30%;
+	transition: width 1s, height 1s, transform 1s;
+
+	transform: rotate(1000deg);
+}
+.status-btn {
+	background-color: #ffffff;
+	color: black;
+	border-radius: 5px;
+}
+
+.status-btn:hover {
+	background-color: #ffffff;
+	color: black;
+	border-radius: 5px;
+	transform: translate(4px, 3px) scale(1.1, 1) skew(-3deg, 9deg);
+	box-shadow: 7px 1px 0px 0px rgb(0, 0, 0);
+}
+.tri-state-toggle {
+	background: rgba(0, 0, 0, 0.8);
+	box-shadow: inset 0 2px 8px 0 rgba(165, 170, 174, 0.25);
+	border-radius: 24px;
+	display: inline-block;
+	overflow: hidden;
+	display: inline-flex;
+	flex-direction: row;
+	transition: all 500ms ease;
+}
+#message {
+	margin-top: 20px;
+	font-size: larger;
+	font-weight: 700;
 }

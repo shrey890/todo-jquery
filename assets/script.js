@@ -11,14 +11,15 @@ $("input[type='text']").keypress(function (e) {
                 return
             }
             let status = 'pending';
-            $('ul').append(`<li data-status='${status}'>
+            let defaultBtnColor = getBtnColor(status)
+            $('ul').append(`<li data-status='${status}' class='${status}'>
             <span class='delete' >❌</span>
             <span class='task-text'>${todo}</span>
             <span class='edit'>✏️</span> 
-            <label><input type='checkbox' name='status' value='ongoing' ${status === 'ongoing' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Ongoing</label> 
-            <label><input type='checkbox' name='status' value='pending' ${status === 'pending' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Pending</label>
-            <label><input type='checkbox' name='status' value='completed' ${status === 'completed' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Completed</label>
-        </li>`);
+            <label><button class="status-btn" data-value="ongoing" style="background-color:${status === 'ongoing' ? getBtnColor('ongoing') : ''};">Ongoing</button></label>
+            <label><button class="status-btn" data-value="pending" style="background-color:${status === 'pending' ? getBtnColor('pending') : ''};">Pending</button></label>
+            <label><button class="status-btn" data-value="completed" style="background-color:${status === 'completed' ? getBtnColor('completed') : ''};">Completed</button></label>
+               </li>`);
             $('ul li:last-child input[type="checkbox"]').bootstrapSwitch();
 
             saveTasks();
@@ -29,30 +30,30 @@ $("input[type='text']").keypress(function (e) {
     }
 });
 // !Changing task status
-$('ul').on('switchChange.bootstrapSwitch', 'input[type="checkbox"]', function (event, state) {
+$('ul').on('click', '.status-btn', function () {
     const $task = $(this).closest('li');
-    const $completedCheckbox = $task.find('input[value="completed"]');
-    const $ongoingCheckbox = $task.find('input[value="ongoing"]');
-    const $pendingCheckbox = $task.find('input[value="pending"]');
-    const status = state ? $(this).val() : 'pending';
-    if (status === 'completed') {
-        $task.addClass('completed');
-        $task.find('.task-text').css('text-decoration', 'line-through');
-    } else {
-        $task.removeClass('completed');
-        $task.find('.task-text').css('text-decoration', 'none');
-    }
-    if (status !== 'completed') {
-        $completedCheckbox.bootstrapSwitch('state', false, true);
-    }
-    if (status !== 'ongoing') {
-        $ongoingCheckbox.bootstrapSwitch('state', false, true);
-    }
-    if (status !== 'pending') {
-        $pendingCheckbox.bootstrapSwitch('state', false, true);
-    }
+    const status = $(this).data('value');
+
+    $task.removeClass('completed ongoing pending');
+    $task.find('.status-btn').css('background-color', '')
+    $task.addClass(status);
+    const btnColor = getBtnColor(status);
+    $(this).css('background-color', btnColor);
     saveTasks();
 });
+// ! function to get Btn Color
+function getBtnColor(status) {
+    switch (status) {
+        case 'completed':
+            return '#66bb6a'
+        case 'ongoing':
+            return '#ffee58'
+        case 'pending':
+            return '#ef5350'
+        default:
+            return ''
+    }
+}
 //! For Delete
 $('ul').on('click', '.delete', function (e) {
     let conf = confirm('Are you sure you want to delete this task?');
@@ -65,6 +66,10 @@ $('ul').on('click', '.delete', function (e) {
 //! For Completed
 $('ul').on('dblclick', 'li', function () {
     $(this).toggleClass('completed');
+    const status = 'Completed';
+    const btnColor = getBtnColor(status);
+    $(this).removeClass('ongoing pending').addClass(status)
+    $(this).find('.status-btn').css('background-color', btnColor)
     saveTasks();
 });
 //! for edit
@@ -113,12 +118,11 @@ function loadTasks() {
         <span class='delete'>❌</span>
         <span class='task-text'>${task.text}</span>
         <span class='edit'>✏️</span>
-        <label><input type='checkbox' name='status' value='ongoing' ${task.ongoing ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Ongoing</label>
-        <label><input type='checkbox' name='status' value='pending' ${task.pending ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Pending</label>
-        <label><input type='checkbox' name='status' value='completed' ${task.completed ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Completed</label>
-    </li>`;
+        <label><button class="status-btn" data-value="ongoing" style="background-color:${status === 'ongoing' ? getBtnColor('ongoing') : ''};">Ongoing</button></label>
+                <label><button class="status-btn" data-value="pending" style="background-color:${status === 'pending' ? getBtnColor('pending') : ''};">Pending</button></label>
+                <label><button class="status-btn" data-value="completed" style="background-color:${status === 'completed' ? getBtnColor('completed') : ''};">Completed</button></label>
+             </li>`;
         $('ul').append(str);
-        $('ul li:last-child input[type="checkbox"]').bootstrapSwitch();
     });
 }
 //! Save Task
@@ -127,13 +131,15 @@ function saveTasks() {
     $('ul li').each(function () {
         let taskText = $(this).find('.task-text').text();
         let completed = $(this).hasClass('completed');
-        let ongoing = $(this).find('input[value="ongoing"]').prop('checked');
-        let pending = $(this).find('input[value="pending"]').prop('checked');
+        let ongoing = $(this).hasClass('ongoing');
+        let pending = $(this).hasClass('pending');
+        let btnColor = $(this).find('.status-btn').css('background-color')
         tasks.push({
             text: taskText,
             completed: completed,
             ongoing: ongoing,
-            pending: pending
+            pending: pending,
+            btnColor: btnColor
         });
     });
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -159,8 +165,8 @@ $('#show-completed').click(function () {
 $('#show-pending').click(function () {
     $('li').hide()
     $('li[data-status="pending"]').show()
-    if ($('li[data=status="pending"]').length === 0) {
-        $('#message').text('All tasks are completed.')
+    if ($('li[data-status="pending"]').length === 0) {
+        $('#message').text('All tasks are completed. & Please reload the page if you change the status of your task.')
     } else {
         $('#message').text('')
     }
@@ -169,7 +175,7 @@ $('#show-ongoing').click(function () {
     $('li').hide();
     $('li[data-status="ongoing"]').show();
     if ($('li[data-status="ongoing"]').length === 0) {
-        $('#message').text('There are no ongoing tasks.');
+        $('#message').text('There are no ongoing tasks. & Please reload the page if you change the status of your task.');
     } else {
         $('#message').text('');
     }
@@ -203,11 +209,11 @@ async function updateTime() {
     let s = new Date().getSeconds();
     h = h % 12
     h = h ? h : 12
-    let ampm = h >= 12 ? 'AM' : 'PM'
-    document.getElementById("footer").innerHTML = h + ":" + m + ":" + s + " " + ampm
+    let amPm = h >= 12 ? 'AM' : 'PM'
+    document.getElementById("footer").innerHTML = h + ":" + m + ":" + s + " " + amPm
 
     await new Promise(resolve => setTimeout(resolve, 1000));
     updateTime();
 }
 updateTime()
-
+// ! filter status updating

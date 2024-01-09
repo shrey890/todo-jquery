@@ -6,15 +6,19 @@ $("input[type='text']").keypress(function (e) {
     if (e.which === 13) {
         let todo = $(this).val().trim();
         if (todo !== '') {
+            if (todo.length > 20) {
+                alert(`only 20 characters are allowed`)
+                return
+            }
             let status = 'pending';
             $('ul').append(`<li data-status='${status}'>
             <span class='delete' >❌</span>
             <span class='task-text'>${todo}</span>
-            <span class='edit'>✏️</span>
-            <label><input type='checkbox' name='status' value='ongoing' ${status === 'ongoing' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Ongoing</label>
-            <label><input type='checkbox' name='status' value='pending' ${status === 'pending' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Pending</label>
-            <label><input type='checkbox' name='status' value='completed' ${status === 'completed' ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Completed</label>
-        </li>`);
+            <span class='edit'>✏️</span> 
+            <label><button class="status-btn" data-value="ongoing">Ongoing</button></label>
+            <label><button class="status-btn" data-value="pending">Pending</button></label>
+            <label><button class="status-btn" data-value="completed">Completed</button></label>
+                </li>`);
             $('ul li:last-child input[type="checkbox"]').bootstrapSwitch();
 
             saveTasks();
@@ -25,30 +29,13 @@ $("input[type='text']").keypress(function (e) {
     }
 });
 // !Changing task status
-$('ul').on('switchChange.bootstrapSwitch', 'input[type="checkbox"]', function (event, state) {
+$('ul').on('click', '.status-btn', function () {
     const $task = $(this).closest('li');
-    const $completedCheckbox = $task.find('input[value="completed"]');
-    const $ongoingCheckbox = $task.find('input[value="ongoing"]');
-    const $pendingCheckbox = $task.find('input[value="pending"]');
-    const status = state ? $(this).val() : 'pending';
-    // Toggle class and line-through style based on the state of the "Completed" checkbox
-    if (status === 'completed') {
-        $task.addClass('completed');
-        $task.find('.task-text').css('text-decoration', 'line-through');
-    } else {
-        $task.removeClass('completed');
-        $task.find('.task-text').css('text-decoration', 'none');
-    }
-    // Disable other checkboxes in the same task
-    if (status !== 'completed') {
-        $completedCheckbox.bootstrapSwitch('state', false, true);
-    }
-    if (status !== 'ongoing') {
-        $ongoingCheckbox.bootstrapSwitch('state', false, true);
-    }
-    if (status !== 'pending') {
-        $pendingCheckbox.bootstrapSwitch('state', false, true);
-    }
+    const status = $(this).data('value');
+
+    $task.removeClass('completed ongoing pending'); // Clear all statuses
+    $task.addClass(status); // Set the clicked status
+
     saveTasks();
 });
 //! For Delete
@@ -111,12 +98,11 @@ function loadTasks() {
         <span class='delete'>❌</span>
         <span class='task-text'>${task.text}</span>
         <span class='edit'>✏️</span>
-        <label><input type='checkbox' name='status' value='ongoing' ${task.ongoing ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Ongoing</label>
-        <label><input type='checkbox' name='status' value='pending' ${task.pending ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Pending</label>
-        <label><input type='checkbox' name='status' value='completed' ${task.completed ? 'checked' : ''} data-toggle='switch' data-on-text="On" data-off-text="Off"> Completed</label>
-    </li>`;
+        <label><button class="status-btn" data-value="ongoing">Ongoing</button></label>
+        <label><button class="status-btn" data-value="pending">Pending</button></label>
+        <label><button class="status-btn" data-value="completed">Completed</button></label>
+          </li>`;
         $('ul').append(str);
-        $('ul li:last-child input[type="checkbox"]').bootstrapSwitch();
     });
 }
 //! Save Task
@@ -125,8 +111,8 @@ function saveTasks() {
     $('ul li').each(function () {
         let taskText = $(this).find('.task-text').text();
         let completed = $(this).hasClass('completed');
-        let ongoing = $(this).find('input[value="ongoing"]').prop('checked');
-        let pending = $(this).find('input[value="pending"]').prop('checked');
+        let ongoing = $(this).hasClass('ongoing');
+        let pending = $(this).hasClass('pending');
         tasks.push({
             text: taskText,
             completed: completed,
@@ -156,8 +142,8 @@ $('#show-completed').click(function () {
 })
 $('#show-pending').click(function () {
     $('li').hide()
-    $('li:not(.completed)').show()
-    if ($('li:not(.completed)').length === 0) {
+    $('li[data-status="pending"]').show()
+    if ($('li[data=status="pending"]').length === 0) {
         $('#message').text('All tasks are completed.')
     } else {
         $('#message').text('')
@@ -166,14 +152,12 @@ $('#show-pending').click(function () {
 $('#show-ongoing').click(function () {
     $('li').hide();
     $('li[data-status="ongoing"]').show();
-
     if ($('li[data-status="ongoing"]').length === 0) {
         $('#message').text('There are no ongoing tasks.');
     } else {
         $('#message').text('');
     }
 });
-
 //? Clear All Tasks button click event
 // $("#clear-all-button").click(function () {
 //     $("#clear-all-confirmation").show();
@@ -195,10 +179,19 @@ $('#show-ongoing').click(function () {
 //         }
 //     }
 // });
-function updateMessage(selector) {
-    if ($(selector).length === 0) {
-        $('#message').text('No tasks to display.');
-    } else {
-        $('#message').text('');
-    }
+// !Footer Time
+async function updateTime() {
+    let date = new Date();
+    let h = new Date().getHours();
+    let m = new Date().getMinutes();
+    let s = new Date().getSeconds();
+    h = h % 12
+    h = h ? h : 12
+    let amPm = h >= 12 ? 'AM' : 'PM'
+    document.getElementById("footer").innerHTML = h + ":" + m + ":" + s + " " + amPm
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    updateTime();
 }
+updateTime()
+
